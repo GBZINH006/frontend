@@ -7,7 +7,7 @@ const api = axios.create({
   }
 })
 
-// 👉 interceptor (pra quando tu tiver login com token)
+//  interceptor (pra quando tu tiver login com token)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token")
 
