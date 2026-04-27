@@ -5,5 +5,65 @@
     padding: 0;
 }
 body {
-    font-family: 'DM Sans';
+   font-family: 'DM Sans', sans-serif;
+   background: #f0f4f8;
+   :root {
+    --sidebar: #111827;
+    --sidebar-hover: #1f2937;
+    --accent: #f59e0b;
+    --accent2: #10b981;
+    --danger: #ef4444;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --card: #ffffff;
+    --bg: #f0f4f8;
+   }
+   input, select, textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+   }
+   button {
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+   }
+   ::-webkit-scrollbar {
+    width: 6px;
+   }
+   ::-webkit-scrollbar-track {
+    background: transparent;
+   }
+   ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+   }
+   @keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    } to {
+        opacity: 1;
+        transform: none;
+    }
+   }
+   @keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15);
+    } to {
+        opacity: 1;
+        transform: none;
+    }
+   }
+   .page_enter {
+    animation: fadeIn 0.25s ease forwards;
+   }
+   .toast-enter {
+    animation: fadeIn 0.2s ease forwards;
+   }
+   @keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+   }
 }
