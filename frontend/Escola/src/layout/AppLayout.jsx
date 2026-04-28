@@ -1,6 +1,6 @@
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import { useUI } from "../contexts/UIContext";
+import { useUI } from "../context/UIContext";
 
 export default function AppLayout({ children }) {
   const { dark } = useUI();

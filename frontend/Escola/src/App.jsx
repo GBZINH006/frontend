@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { UIProvider } from "./contexts/UIContext";
+import { UIProvider } from "./context/UIContext";
 import AppLayout from "./layout/AppLayout";
 
 import Dashboard from "./pages/Dashboard";

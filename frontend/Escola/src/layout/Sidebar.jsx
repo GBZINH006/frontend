@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useUI } from "../contexts/UIContext";
+import { useUI } from "../context/UIContext";
 
 export default function Sidebar() {
   const { sidebarCollapsed, toggleSidebar } = useUI();
