@@ -15,3 +15,6 @@ export default function DashboardCharts({ studentsData }) {
 
     return <Chart type="line" data={data} />;
 }
+
+
+//grade escolar para alunos 
