@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import Toast from "../components/ui/Toast";
+import Toast from "../components/ToastProvider";
 import api from "../services/api";
 
 export default function Login() {
