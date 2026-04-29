@@ -18,3 +18,5 @@ export default function AppLayout({ children }) {
     </div>
   );
 }
+
+//tema preto e branco 
