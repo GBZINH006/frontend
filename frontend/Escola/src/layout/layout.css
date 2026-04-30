@@ -1,0 +1,29 @@
+/* Layout geral */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Coluna principal (topbar + conteúdo) */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Topbar fixa no topo */
+.app-main > header,
+.app-main > .topbar {
+  flex-shrink: 0;
+}
+
+/* Área que rola */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #0b1220; /* mesma vibe do fundo */
+}
+

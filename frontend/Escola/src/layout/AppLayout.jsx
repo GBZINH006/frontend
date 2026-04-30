@@ -4,12 +4,18 @@ import Topbar from "./Topbar";
 
 export default function AppLayout() {
   return (
-    <div className="layout">
+    <div className="app-layout">
       <Sidebar />
-      <div className="main">
+
+      <div className="app-main">
         <Topbar />
-        <Outlet /> {/* ESSENCIAL */}
+
+        {/* 🔽 AQUI fica o scroll */}
+        <main className="app-content">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
 }
+``
