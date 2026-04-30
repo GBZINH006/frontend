@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { UIProvider } from "./context/UIContext";
-<<<<<<< HEAD
+
 import { ToastProvider } from "./components/ToastProvider";
 import AppLayout from "./layout/AppLayout";
 
@@ -34,14 +34,7 @@ function RoleRoute({ children, roles }) {
   return children;
 }
 
-function HomeDashboard() {
-  const { user } = useAuth();
 
-  if (user?.role === "aluno") return <StudentDashboard />;
-  if (user?.role === "professor") return <ProfessorDashboard />;
-
-  return <Dashboard />;
-}
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -106,11 +99,11 @@ function AppRoutes() {
     </Routes>
   );
 }
-=======
+
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ToastProvider } from "./components/ToastProvider";
 import AppLayout from "./layout/AppLayout";
->>>>>>> f1e175d (admin indo"")
+
 
 import Login            from "./pages/Login";
 import Dashboard        from "./pages/Dashboard"; 
@@ -158,17 +151,15 @@ function AppRoutes() {
   );
 }
 
+
 // 4. Componente Principal
 export default function App() {
   return (
     <AuthProvider>
       <UIProvider>
         <ToastProvider>
-<<<<<<< HEAD
+          {/* Limpamos os conflitos do Git e mantivemos a versão estável */}
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-=======
-          <BrowserRouter>
->>>>>>> f1e175d (admin indo"")
             <AppRoutes />
           </BrowserRouter>
         </ToastProvider>
