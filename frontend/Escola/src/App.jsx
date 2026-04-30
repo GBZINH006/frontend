@@ -1,21 +1,22 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { UIProvider } from "./context/UIContext";
+<<<<<<< HEAD
 
+=======
+>>>>>>> e559ba33e1095ab034618e9bc48b844179846677
 import { ToastProvider } from "./components/ToastProvider";
 import AppLayout from "./layout/AppLayout";
 
-import Login            from "./pages/login";
-import Dashboard        from "./pages/Dashboard";
-import StudentDashboard from "./pages/Studentdashboard";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import StudentDashboard from "./pages/StudentDashboard";
 import ProfessorDashboard from "./pages/ProfessorDashboard";
-import Students         from "./pages/Students";
-import Classes          from "./pages/Classes";
-import Enrollments      from "./pages/Enrollments";
-import Grades           from "./pages/Grades";
-import Teachers         from "./pages/Teachers";
-import MyGrades         from "./pages/Mygrades";
-import MyEnrollments    from "./pages/Myenrollments";
+import Students from "./pages/Students";
+import Teachers from "./pages/Teachers";
+import Classes from "./pages/Classes";
+import Enrollments from "./pages/Enrollments";
+import Grades from "./pages/Grades";
 
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -27,6 +28,7 @@ function PublicRoute({ children }) {
   return !isAuthenticated ? children : <Navigate to="/" replace />;
 }
 
+<<<<<<< HEAD
 function RoleRoute({ children, roles }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
@@ -34,6 +36,10 @@ function RoleRoute({ children, roles }) {
   return children;
 }
 
+=======
+function HomeDashboard() {
+  const { user } = useAuth();
+>>>>>>> e559ba33e1095ab034618e9bc48b844179846677
 
 
 function AppRoutes() {
@@ -43,6 +49,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
+<<<<<<< HEAD
       <Route path="/*" element={
         <PrivateRoute>
           <AppLayout user={user}>
@@ -135,31 +142,46 @@ function AppRoutes() {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
       <Route path="/" element={<PrivateRoute><AppLayout /></PrivateRoute>}>
+=======
+      <Route
+        path="/*"
+        element={
+          <PrivateRoute>
+            <AppLayout user={user} />
+          </PrivateRoute>
+        }
+      >
+>>>>>>> e559ba33e1095ab034618e9bc48b844179846677
         <Route index element={<HomeDashboard />} />
-        <Route path="alunos" element={<Alunos />} />
-        <Route path="professores" element={<Professores />} />
-        <Route path="turmas-admin" element={<TurmasAdmin />} />
-        <Route path="vinculos" element={<Vinculos />} />
-        <Route path="avaliacoes" element={<Avaliacoes />} />
-        
-        <Route path="minhas-turmas" element={<Vinculos />} />
-        <Route path="minhas-notas" element={<Avaliacoes />} />
-      </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="students" element={<Students />} />
+        <Route path="teachers" element={<Teachers />} />
+        <Route path="classes" element={<Classes />} />
+        <Route path="enrollments" element={<Enrollments />} />
+        <Route path="grades" element={<Grades />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
     </Routes>
   );
 }
 
+<<<<<<< HEAD
 
 // 4. Componente Principal
+=======
+>>>>>>> e559ba33e1095ab034618e9bc48b844179846677
 export default function App() {
   return (
     <AuthProvider>
       <UIProvider>
         <ToastProvider>
+<<<<<<< HEAD
           {/* Limpamos os conflitos do Git e mantivemos a versão estável */}
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+=======
+          <BrowserRouter>
+>>>>>>> e559ba33e1095ab034618e9bc48b844179846677
             <AppRoutes />
           </BrowserRouter>
         </ToastProvider>
