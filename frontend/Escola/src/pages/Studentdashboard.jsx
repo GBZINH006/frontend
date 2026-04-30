@@ -1,123 +1,130 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import api from "../services/api";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Card } from "primereact/card";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Skeleton } from "primereact/skeleton";
 
-export default function StudentDashboard() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [enrollments, setEnrollments] = useState([]);
-  const [grades, setGrades] = useState([]);
+export default function ProfessorDashboard({ user }) {
+  const [classes, setClasses] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [grades, setGrades] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      api.get("/enrollments"),
-      api.get("/grades"),
-    ]).then(([e, g]) => {
-      // filtra pelo student_id do user logado (o id vem do JWT como user.id)
-      const myEnrollments = e.data.filter(en => en.student?.email === user?.email || true);
-      setEnrollments(e.data);
-      setGrades(g.data);
-    }).catch(() => {}).finally(() => setLoading(false));
+    const token = localStorage.getItem("token");
+
+    axios
+      .get("/api/classes", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const data = res.data?.data || res.data || [];
+        setClasses(data);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const avg = grades.length
-    ? (grades.reduce((a, b) => a + b.nota, 0) / grades.length).toFixed(1)
-    : "—";
+  const loadStudents = (classId) => {
+    const token = localStorage.getItem("token");
 
-  const avgColor = avg >= 7 ? "#16a34a" : avg >= 5 ? "#b45309" : avg === "—" ? "var(--muted)" : "#be123c";
+    setSelectedClass(classId);
+    setStudents([]);
+
+    axios
+      .get(`/api/enrollments/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const data = res.data?.data || res.data || [];
+        setStudents(data);
+      });
+  };
+
+  const handleChange = (id, value) => {
+    setGrades({ ...grades, [id]: value });
+  };
+
+  const saveGrade = (studentId) => {
+    const token = localStorage.getItem("token");
+
+    axios.post(
+      "/api/grades",
+      {
+        aluno_id: studentId,
+        nota: grades[studentId],
+        turma_id: selectedClass,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  };
 
   return (
-    <div className="animate-in">
-      <div className="page-header">
-        <div className="page-header__text">
-          <h1>Olá, {user?.name?.split(" ")[0] ?? "Aluno"} 👋</h1>
-          <p>Acompanhe suas turmas e notas</p>
-        </div>
-      </div>
+    <div style={{ padding: 24 }}>
+      <h2 style={{ marginBottom: 20 }}>
+        Professor: <span style={{ color: "#6366f1" }}>{user?.name}</span>
+      </h2>
 
-      {/* cards resumo */}
-      <div className="stats-grid" style={{ gridTemplateColumns: "repeat(3,1fr)", marginBottom: 28 }}>
-        <div className="stats-card" style={{ "--card-accent": "#3b82f6", cursor: "pointer" }} onClick={() => navigate("/my-enrollments")}>
-          <div className="stats-card__top">
-            <div className="stats-card__icon" style={{ background: "#3b82f618", color: "#3b82f6" }}>
-              <i className="pi pi-book" />
-            </div>
-          </div>
-          <div className="stats-card__value">{loading ? "…" : enrollments.length}</div>
-          <div className="stats-card__label">Turmas matriculadas</div>
-        </div>
-
-        <div className="stats-card" style={{ "--card-accent": "#f59e0b", cursor: "pointer" }} onClick={() => navigate("/my-grades")}>
-          <div className="stats-card__top">
-            <div className="stats-card__icon" style={{ background: "#f59e0b18", color: "#f59e0b" }}>
-              <i className="pi pi-star" />
-            </div>
-          </div>
-          <div className="stats-card__value">{loading ? "…" : grades.length}</div>
-          <div className="stats-card__label">Notas lançadas</div>
-        </div>
-
-        <div className="stats-card" style={{ "--card-accent": avgColor }}>
-          <div className="stats-card__top">
-            <div className="stats-card__icon" style={{ background: avgColor + "18", color: avgColor }}>
-              <i className="pi pi-chart-bar" />
-            </div>
-          </div>
-          <div className="stats-card__value" style={{ color: avgColor }}>{loading ? "…" : avg}</div>
-          <div className="stats-card__label">Média geral</div>
-        </div>
-      </div>
-
-      {/* últimas notas */}
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <h2>Últimas Notas</h2>
-            <p>Seu desempenho recente</p>
-          </div>
-          <button className="btn btn-ghost" onClick={() => navigate("/my-grades")}>
-            Ver todas <i className="pi pi-arrow-right" style={{ marginLeft: 4 }} />
-          </button>
-        </div>
-        <div className="card-body">
+      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 20 }}>
+        <Card title="Turmas">
           {loading ? (
-            <div style={{ textAlign: "center", padding: 32, color: "var(--muted2)" }}>
-              <i className="pi pi-spin pi-spinner" style={{ fontSize: 24 }} />
-            </div>
-          ) : grades.length === 0 ? (
-            <div style={{ textAlign: "center", padding: 32, color: "var(--muted2)" }}>
-              <i className="pi pi-inbox" style={{ fontSize: 32, marginBottom: 8, display: "block" }} />
-              Nenhuma nota lançada ainda.
-            </div>
+            <Skeleton height="4rem" />
+          ) : classes.length === 0 ? (
+            <p>Sem turmas</p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {grades.slice(0, 5).map((g) => {
-                const c = g.nota >= 7 ? "#16a34a" : g.nota >= 5 ? "#b45309" : "#be123c";
-                const bg = g.nota >= 7 ? "#dcfce7" : g.nota >= 5 ? "#fef3c7" : "#ffe4e6";
-                return (
-                  <div key={g.id} style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "12px 16px", background: "var(--bg)",
-                    borderRadius: 10, border: "1px solid var(--border)",
-                  }}>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: 14 }}>{g.turma}</div>
-                      <div style={{ fontSize: 12, color: "var(--muted)" }}>{g.aluno}</div>
-                    </div>
-                    <span style={{
-                      width: 44, height: 30, borderRadius: 8,
-                      background: bg, color: c,
-                      fontWeight: 700, fontSize: 15,
-                      display: "grid", placeItems: "center",
-                    }}>{g.nota}</span>
-                  </div>
-                );
-              })}
-            </div>
+            classes.map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  padding: 12,
+                  cursor: "pointer",
+                  borderBottom: "1px solid #eee",
+                }}
+                onClick={() => loadStudents(c.id)}
+              >
+                {c.name}
+              </div>
+            ))
           )}
-        </div>
+        </Card>
+
+        <Card title="Alunos">
+          {!selectedClass ? (
+            <p>Selecione uma turma</p>
+          ) : students.length === 0 ? (
+            <Skeleton height="4rem" />
+          ) : (
+            students.map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: 10,
+                  borderBottom: "1px solid #eee",
+                }}
+              >
+                <div style={{ flex: 1 }}>{s.name}</div>
+
+                <InputText
+                  placeholder="Nota"
+                  value={grades[s.id] || ""}
+                  onChange={(e) => handleChange(s.id, e.target.value)}
+                  style={{ width: 80 }}
+                />
+
+                <Button
+                  label="Salvar"
+                  onClick={() => saveGrade(s.id)}
+                />
+              </div>
+            ))
+          )}
+        </Card>
       </div>
     </div>
   );
