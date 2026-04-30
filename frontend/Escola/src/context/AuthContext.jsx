@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
-// decode JWT sem biblioteca extra
+
 function decodeToken(token) {
   try {
     const payload = token.split(".")[1];
