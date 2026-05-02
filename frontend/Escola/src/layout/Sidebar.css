@@ -1,0 +1,144 @@
+/* ── Sidebar ── */
+.sidebar {
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  transition: width .25s ease;
+  flex-shrink: 0;
+  overflow: hidden;
+  width: 240px;
+}
+
+.sidebar--collapsed {
+  width: 68px;
+}
+
+/* ── Logo ── */
+.sidebar-logo {
+  padding: 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.sidebar-logo__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-logo__title {
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* ── Badge do role ── */
+.sidebar-role {
+  padding: 10px 14px;
+}
+
+.sidebar-role__badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ── Navegação ── */
+.sidebar-nav {
+  flex: 1;
+  padding: 8px;
+}
+
+.sidebar-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  text-decoration: none;
+  color: #94a3b8;
+  font-weight: 400;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.sidebar-nav__link:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+.sidebar-nav__link--active {
+  background: #f59e0b;
+  color: #fff;
+  font-weight: 600;
+}
+
+.sidebar-nav__link--active:hover {
+  background: #f59e0b;
+  opacity: 0.9;
+}
+
+/* ── Footer ── */
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid #1e293b;
+}
+
+.sidebar-footer__user {
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.sidebar-footer__name {
+  color: #f1f5f9;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sidebar-footer__email {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.sidebar-footer__btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  margin-bottom: 4px;
+  font-size: 14px;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+
+.sidebar-footer__btn:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+.sidebar-footer__btn--danger {
+  color: #ef4444;
+}
+
+.sidebar-footer__btn--danger:hover {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}

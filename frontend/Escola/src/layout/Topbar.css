@@ -1,0 +1,52 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 58px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.topbar__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b1120;
+  flex-shrink: 0;
+}
+
+.topbar__name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.topbar__role {
+  font-size: 11px;
+  color: var(--muted);
+}

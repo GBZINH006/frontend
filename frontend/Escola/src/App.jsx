@@ -9,7 +9,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Login from "./pages/login";
 
 import Dashboard from "./pages/Dashboard";
-import Professordashboard from "./pages/Professordashboard";
+import Professordashboard from "./pages/ProfessorDashboard";
 import Studentdashboard from "./pages/Studentdashboard";
 
 import Students from "./pages/Students";
