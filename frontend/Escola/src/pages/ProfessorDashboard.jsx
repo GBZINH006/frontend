@@ -43,29 +43,27 @@ export default function ProfessorDashboard() {
     setLoadingStudents(true);
 
     api
-      .get("/enrollments")
+      .get(`/enrollments/class/${turma.id}`)
       .then((r) => {
-        const data = r.data?.matriculas || r.data;
-        const alunosDaTurma = (Array.isArray(data) ? data : [])
-          .filter((e) => e.class_id === turma.id || e.classId === turma.id)
-          .map((e) => e.student);
-        setStudents(alunosDaTurma.filter(Boolean));
+        setStudents(r.data);
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log("STATUS REAL:", err.response?.status);
+        console.log("ERRO COMPLETO:", err);
+        console.log("RESPOSTA:", err.response?.data);
+
         show({
           severity: "error",
           summary: "Erro",
-          detail: "Erro ao carregar alunos.",
+          detail: err.response?.data?.message || "Erro ao carregar alunos.",
           life: 3000,
-        }),
-      )
+        });
+      })
       .finally(() => setLoadingStudents(false));
   };
 
   const saveGrade = async (studentId) => {
     const value = gradesRef.current[studentId];
-    console.log("gradesRef:", gradesRef.current);
-    console.log("value:", value);
 
     if (value === null || value === undefined) {
       show({
@@ -93,16 +91,17 @@ export default function ProfessorDashboard() {
         class_id: selectedClass.id,
         value,
       });
+      console.log("Resposta:", await api.get("/grades"));
+      // atualiza localmente
+      setStudents((prev) =>
+        prev.map((s) => (s.id === studentId ? { ...s, grade: value } : s)),
+      );
       show({
         severity: "success",
         summary: "Salvo",
         detail: "Nota lançada com sucesso!",
         life: 3000,
       });
-      const updateGrade = (studentId, val) => {
-        gradesRef.current = { ...gradesRef.current, [studentId]: val };
-        setGrades({ ...gradesRef.current });
-      };
     } catch (e) {
       show({
         severity: "error",
@@ -122,6 +121,11 @@ export default function ProfessorDashboard() {
       <i className="pi pi-check" /> Salvar
     </button>
   );
+
+  const updateGrade = (studentId, val) => {
+    gradesRef.current = { ...gradesRef.current, [studentId]: val };
+    setGrades({ ...gradesRef.current });
+  };
 
   return (
     <div className="animate-in">
@@ -212,20 +216,18 @@ export default function ProfessorDashboard() {
                   header="Nota"
                   style={{ width: 140 }}
                   body={(row) => (
-                    <input
-                      type="number"
-                      className="form-input"
-                      style={{ width: 80 }}
+                    <InputNumber
+                      value={grades[row.id] ?? row.grade ?? null}
+                      onValueChange={(e) => updateGrade(row.id, e.value)}
                       min={0}
                       max={10}
-                      step={0.1}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value);
-                        updateGrade(row.id, isNaN(val) ? null : val);
-                      }}
+                      mode="decimal"
+                      minFractionDigits={1}
+                      maxFractionDigits={1}
                     />
                   )}
                 />
+                <Column header="Nota atual" body={(row) => row.grade ?? "-"} />
                 <Column header="" body={actionBody} style={{ width: 120 }} />
               </DataTable>
             )}
