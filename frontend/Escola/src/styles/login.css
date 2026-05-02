@@ -1,0 +1,233 @@
+/* ── Layout ── */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Lado esquerdo ── */
+.login-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  background: linear-gradient(145deg, #0b1120 0%, #0f2444 60%, #0b1120 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(99, 179, 237, 0.7);
+  pointer-events: none;
+}
+
+.login-glow-amber {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.12), transparent 70%);
+  top: -80px;
+  right: 40px;
+  pointer-events: none;
+}
+
+.login-glow-blue {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56,189,248,0.10), transparent 70%);
+  bottom: -60px;
+  left: 60px;
+  pointer-events: none;
+}
+
+.login-left-content {
+  position: relative;
+  text-align: center;
+  color: #fff;
+  max-width: 360px;
+}
+
+.login-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  box-shadow: 0 8px 32px rgba(245,158,11,0.35);
+  font-size: 36px;
+}
+
+.login-title {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.login-title-gradient {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-subtitle {
+  color: rgba(255,255,255,0.45);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.login-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.login-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.login-feature-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(245,158,11,0.15);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.login-feature-text {
+  color: rgba(255,255,255,0.6);
+  font-size: 13.5px;
+}
+
+/* ── Lado direito ── */
+.login-right {
+  width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  background: #f0f4f8;
+}
+
+.login-form-wrapper {
+  width: 100%;
+}
+
+.login-form-icon {
+  width: 48px;
+  height: 48px;
+  background: #0b1120;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+}
+
+.login-form-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.login-form-description {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 36px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  display: block;
+  margin-bottom: 7px;
+  letter-spacing: 0.2px;
+}
+
+.login-input-wrapper {
+  position: relative;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.login-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+}
+
+.login-btn {
+  margin-top: 4px;
+  padding: 13px;
+  background: linear-gradient(135deg, #0b1120, #1e3a5f);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.3px;
+  transition: opacity .15s, box-shadow .15s;
+  box-shadow: 0 4px 16px rgba(11,17,32,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-btn:hover {
+  opacity: 0.88;
+}
+
+.login-btn:disabled {
+  background: #94a3b8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;
+}

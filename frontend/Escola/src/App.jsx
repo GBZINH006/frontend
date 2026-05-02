@@ -6,7 +6,7 @@ import { UIProvider } from "./context/UIContext";
 
 import ScrollToTop from "./components/ScrollToTop";
 
-import Login from "./pages/Login";
+import Login from "./pages/login";
 
 import Dashboard from "./pages/Dashboard";
 import Professordashboard from "./pages/Professordashboard";
