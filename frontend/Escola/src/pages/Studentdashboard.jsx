@@ -1,146 +1,234 @@
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import { Card } from "primereact/card";
+import { useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { InputNumber } from "primereact/inputnumber";
-import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { Skeleton } from "primereact/skeleton";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
-export default function ProfessorDashboard({ user }) {
-  const [classes, setClasses] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(null);
-  const [grades, setGrades] = useState({});
+export default function StudentDashboard() {
+  const { user } = useAuth();
+  const [enrollments, setEnrollments] = useState([]);
+  const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
-  const toast = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    axios
-      .get("/api/classes", {
-        headers: { Authorization: `Bearer ${token}` },
+    Promise.all([
+      api.get("/enrollments/aluno"),
+      api.get(`/grades/student/${user?.id}`),
+    ])
+      .then(([e, g]) => {
+        setEnrollments(Array.isArray(e.data) ? e.data : []);
+        setGrades(Array.isArray(g.data) ? g.data : []);
       })
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setClasses(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setClasses([]))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  const loadStudents = (classData) => {
-    const token = localStorage.getItem("token");
-
-    setSelectedClass(classData);
-    setStudents([]);
-
-    axios
-      .get(`/api/enrollments/${classData.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setStudents(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setStudents([]));
-  };
-
-  const onGradeChange = (value, studentId) => {
-    setGrades({ ...grades, [studentId]: value });
-  };
-
-  const saveGrade = (studentId) => {
-    const token = localStorage.getItem("token");
-    const nota = grades[studentId];
-
-    if (nota == null || nota < 0 || nota > 10) {
-      toast.current.show({ severity: "warn", summary: "Nota inválida", detail: "Digite entre 0 e 10" });
-      return;
-    }
-
-    axios
-      .post(
-        "/api/grades",
-        {
-          aluno_id: studentId,
-          nota,
-          turma_id: selectedClass.id,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+  const avg = grades.length
+    ? (grades.reduce((a, b) => a + (b.value ?? 0), 0) / grades.length).toFixed(
+        1,
       )
-      .then(() => {
-        toast.current.show({ severity: "success", summary: "Salvo", detail: "Nota lançada" });
-      })
-      .catch(() => {
-        toast.current.show({ severity: "error", summary: "Erro", detail: "Falha ao salvar" });
-      });
+    : null;
+
+  const notaBody = (row) => {
+    const n = row.value ?? row.nota;
+    const color = n >= 7 ? "#16a34a" : n >= 5 ? "#b45309" : "#be123c";
+    const bg =
+      n >= 7
+        ? "rgba(22,163,74,0.12)"
+        : n >= 5
+          ? "rgba(180,83,9,0.12)"
+          : "rgba(190,18,60,0.12)";
+    return (
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 44,
+          height: 28,
+          borderRadius: 8,
+          background: bg,
+          color,
+          fontWeight: 700,
+          fontSize: 13,
+        }}
+      >
+        {n}
+      </span>
+    );
   };
 
-  const gradeBody = (row) => (
-    <InputNumber
-      value={grades[row.id] || null}
-      onValueChange={(e) => onGradeChange(e.value, row.id)}
-      min={0}
-      max={10}
-      style={{ width: 100 }}
-    />
-  );
-
-  const actionBody = (row) => (
-    <Button label="Salvar" size="small" onClick={() => saveGrade(row.id)} />
-  );
+  const situacaoBody = (row) => {
+    const n = row.value ?? row.nota;
+    if (n >= 7)
+      return (
+        <span style={{ color: "#16a34a", fontWeight: 600 }}>✓ Aprovado</span>
+      );
+    if (n >= 5)
+      return (
+        <span style={{ color: "#b45309", fontWeight: 600 }}>⚠ Recuperação</span>
+      );
+    return (
+      <span style={{ color: "#be123c", fontWeight: 600 }}>✗ Reprovado</span>
+    );
+  };
 
   return (
-    <div style={{ padding: 24 }}>
-      <Toast ref={toast} />
+    <div className="animate-in">
+      <div className="page-header">
+        <div className="page-header__text">
+          <h1>Olá, {user?.name}!</h1>
+          <p>Acompanhe suas turmas e notas</p>
+        </div>
+      </div>
 
-      <h2 style={{ marginBottom: 20 }}>
-        Professor: <span style={{ color: "#6366f1" }}>{user?.name}</span>
-      </h2>
+      {/* Stats */}
+      <div
+        className="stats-grid"
+        style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+      >
+        <div className="stats-card">
+          <div className="stats-card__top">
+            <div
+              className="stats-card__icon"
+              style={{ background: "rgba(59,130,246,0.15)", color: "#3b82f6" }}
+            >
+              <i className="pi pi-book" />
+            </div>
+          </div>
+          <div className="stats-card__value">
+            {loading ? "…" : enrollments.length}
+          </div>
+          <div className="stats-card__label">Turmas matriculado</div>
+        </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 20 }}>
-        <Card title="Turmas">
-          {loading ? (
-            <Skeleton height="4rem" />
-          ) : classes.length === 0 ? (
-            <p>Sem turmas</p>
-          ) : (
-            (classes || []).map((c) => (
+        <div className="stats-card">
+          <div className="stats-card__top">
+            <div
+              className="stats-card__icon"
+              style={{ background: "rgba(245,158,11,0.15)", color: "#f59e0b" }}
+            >
+              <i className="pi pi-star" />
+            </div>
+          </div>
+          <div className="stats-card__value">
+            {loading ? "…" : grades.length}
+          </div>
+          <div className="stats-card__label">Notas lançadas</div>
+        </div>
+
+        <div className="stats-card">
+          <div className="stats-card__top">
+            <div
+              className="stats-card__icon"
+              style={{ background: "rgba(16,185,129,0.15)", color: "#10b981" }}
+            >
+              <i className="pi pi-chart-bar" />
+            </div>
+          </div>
+          <div
+            className="stats-card__value"
+            style={{
+              color:
+                avg >= 7
+                  ? "#10b981"
+                  : avg >= 5
+                    ? "#f59e0b"
+                    : avg
+                      ? "#ef4444"
+                      : "var(--muted)",
+            }}
+          >
+            {loading ? "…" : (avg ?? "—")}
+          </div>
+          <div className="stats-card__label">Média geral</div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        {/* Turmas */}
+        <div className="card">
+          <div className="card-header">
+            <h2>Minhas Turmas</h2>
+          </div>
+          <div className="card-body">
+            {loading ? (
+              <Skeleton height="4rem" />
+            ) : enrollments.length === 0 ? (
               <div
-                key={c.id}
                 style={{
-                  padding: 12,
-                  cursor: "pointer",
-                  borderRadius: 6,
-                  marginBottom: 8,
-                  background: selectedClass?.id === c.id ? "#e0e7ff" : "#f8fafc",
+                  textAlign: "center",
+                  padding: "40px 0",
+                  color: "var(--muted)",
                 }}
-                onClick={() => loadStudents(c)}
               >
-                {c.name || c.nome}
+                <i
+                  className="pi pi-book"
+                  style={{ fontSize: 24, marginBottom: 10, display: "block" }}
+                />
+                <p style={{ fontSize: 13 }}>
+                  Você não está matriculado em nenhuma turma
+                </p>
               </div>
-            ))
-          )}
-        </Card>
+            ) : (
+              <DataTable
+                value={enrollments}
+                emptyMessage="Nenhuma turma."
+                rowHover
+              >
+                <Column header="Turma" body={(r) => r.class?.name ?? "—"} />
+                <Column
+                  header="Descrição"
+                  body={(r) =>
+                    r.class?.description ?? (
+                      <span style={{ color: "var(--muted)" }}>—</span>
+                    )
+                  }
+                />
+              </DataTable>
+            )}
+          </div>
+        </div>
 
-        <Card title="Alunos">
-          {!selectedClass ? (
-            <p>Selecione uma turma</p>
-          ) : students.length === 0 ? (
-            <Skeleton height="4rem" />
-          ) : (
-            <DataTable value={students} responsiveLayout="scroll">
-              <Column field="name" header="Aluno" />
-              <Column body={gradeBody} header="Nota" />
-              <Column body={actionBody} header="" />
-            </DataTable>
-          )}
-        </Card>
+        {/* Notas */}
+        <div className="card">
+          <div className="card-header">
+            <h2>Minhas Notas</h2>
+          </div>
+          <div className="card-body">
+            {loading ? (
+              <Skeleton height="4rem" />
+            ) : grades.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "40px 0",
+                  color: "var(--muted)",
+                }}
+              >
+                <i
+                  className="pi pi-star"
+                  style={{ fontSize: 24, marginBottom: 10, display: "block" }}
+                />
+                <p style={{ fontSize: 13 }}>Nenhuma nota lançada ainda</p>
+              </div>
+            ) : (
+              <DataTable value={grades} emptyMessage="Nenhuma nota." rowHover>
+                <Column
+                  header="Turma"
+                  body={(r) => r.class?.name ?? r.turma ?? "—"}
+                />
+                <Column header="Nota" body={notaBody} style={{ width: 90 }} />
+                <Column
+                  header="Situação"
+                  body={situacaoBody}
+                  style={{ width: 130 }}
+                />
+              </DataTable>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

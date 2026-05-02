@@ -8,7 +8,8 @@ export default function MyEnrollments() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/enrollments")
+    api
+      .get("/enrollments/aluno")
       .then((r) => setEnrollments(Array.isArray(r.data) ? r.data : []))
       .catch(() => setEnrollments([]))
       .finally(() => setLoading(false));
@@ -23,7 +24,10 @@ export default function MyEnrollments() {
       <div className="page-header">
         <div className="page-header__text">
           <h1>Minhas Turmas</h1>
-          <p>{enrollments.length} matrícula{enrollments.length !== 1 ? "s" : ""} ativa{enrollments.length !== 1 ? "s" : ""}</p>
+          <p>
+            {enrollments.length} matrícula{enrollments.length !== 1 ? "s" : ""}{" "}
+            ativa{enrollments.length !== 1 ? "s" : ""}
+          </p>
         </div>
       </div>
 
@@ -34,14 +38,24 @@ export default function MyEnrollments() {
         <DataTable
           value={enrollments}
           loading={loading}
-          paginator rows={10}
+          paginator
+          rows={10}
           emptyMessage="Você não está matriculado em nenhuma turma."
           rowHover
         >
-          <Column header="Turma"      field="class.name"        body={(r) => r.class?.name ?? "—"}        sortable />
-          <Column header="Descrição"  field="class.description" body={(r) => r.class?.description ?? "—"} />
-          <Column header="Professor"  body={professorBody} />
-          <Column header="Status"     body={statusBody} style={{ width: 100 }} />
+          <Column
+            header="Turma"
+            field="class.name"
+            body={(r) => r.class?.name ?? "—"}
+            sortable
+          />
+          <Column
+            header="Descrição"
+            field="class.description"
+            body={(r) => r.class?.description ?? "—"}
+          />
+          <Column header="Professor" body={professorBody} />
+          <Column header="Status" body={statusBody} style={{ width: 100 }} />
         </DataTable>
       </div>
     </div>
