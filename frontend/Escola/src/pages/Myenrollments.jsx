@@ -16,7 +16,6 @@ export default function MyEnrollments() {
   }, []);
 
   const professorBody = (row) => row.class?.professor?.name ?? "—";
-
   const statusBody = () => <span className="badge badge-green">Ativa</span>;
 
   return (

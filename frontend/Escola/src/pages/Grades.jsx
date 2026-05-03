@@ -99,14 +99,14 @@ export default function Grades() {
   );
 
   const notaBody = (row) => {
-    const n = row.nota;
-    const color = n >= 7 ? "#16a34a" : n >= 5 ? "#b45309" : "#be123c";
+    const n = row.value ?? row.nota;
+    const color = n >= 7 ? "#4ade80" : n >= 5 ? "#fbbf24" : "#f87171";
     const bg =
       n >= 7
-        ? "rgba(22,163,74,0.12)"
+        ? "rgba(74,222,128,0.15)"
         : n >= 5
-          ? "rgba(180,83,9,0.12)"
-          : "rgba(190,18,60,0.12)";
+          ? "rgba(251,191,36,0.15)"
+          : "rgba(248,113,113,0.15)";
     return (
       <span
         style={{
