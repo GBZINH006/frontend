@@ -42,23 +42,32 @@ export default function ProfessorDashboard() {
     setStudents([]);
     setLoadingStudents(true);
 
-    api
-      .get(`/enrollments/class/${turma.id}`)
-      .then((r) => {
-        setStudents(r.data);
-      })
-      .catch((err) => {
-        console.log("STATUS REAL:", err.response?.status);
-        console.log("ERRO COMPLETO:", err);
-        console.log("RESPOSTA:", err.response?.data);
+    Promise.all([api.get("/enrollments/minhas"), api.get("/grades")])
+      .then(([e, g]) => {
+        const data = e.data?.matriculas || e.data;
+        const alunosDaTurma = (Array.isArray(data) ? data : [])
+          .filter((e) => e.class_id === turma.id || e.classId === turma.id)
+          .map((e) => e.student);
 
+        const notasDaTurma = (g.data?.notas || g.data || []).filter(
+          (n) => n.turma === turma.name,
+        );
+
+        const alunosComNota = alunosDaTurma.filter(Boolean).map((aluno) => {
+          const nota = notasDaTurma.find((n) => n.aluno === aluno.name);
+          return { ...aluno, grade: nota?.nota ?? null };
+        });
+
+        setStudents(alunosComNota);
+      })
+      .catch(() =>
         show({
           severity: "error",
           summary: "Erro",
-          detail: err.response?.data?.message || "Erro ao carregar alunos.",
+          detail: "Erro ao carregar alunos.",
           life: 3000,
-        });
-      })
+        }),
+      )
       .finally(() => setLoadingStudents(false));
   };
 
@@ -204,39 +213,135 @@ export default function ProfessorDashboard() {
                 </p>
               </div>
             ) : (
-              <DataTable
-                key={selectedClass?.id}
-                value={students}
-                responsiveLayout="scroll"
-                emptyMessage="Nenhum aluno."
-              >
-                <Column field="name" header="Aluno" sortable />
-                <Column field="email" header="E-mail" />
-                <Column
-                  header="Nota lançada"
-                  body={(row) => row.grade ?? "—"}
-                  style={{ width: 160, paddingLeft: 16 }}
-                />
-                <Column
-                  header="Nova nota"
-                  style={{ width: 200 }}
-                  body={(row) => (
-                    <input
-                      type="number"
-                      className="form-input"
-                      style={{ width: 100 }}
-                      min={0}
-                      max={10}
-                      step={0.1}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value);
-                        updateGrade(row.id, isNaN(val) ? null : val);
-                      }}
-                    />
-                  )}
-                />
-                <Column header="" body={actionBody} style={{ width: 120 }} />
-              </DataTable>
+              <>
+                {/* Cards de média */}
+                {selectedClass && students.length > 0 && (
+                  <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                    <div
+                      className="stats-card"
+                      style={{ flex: 1, cursor: "default" }}
+                    >
+                      <div className="stats-card__top">
+                        <div
+                          className="stats-card__icon"
+                          style={{
+                            background: "rgba(245,158,11,0.15)",
+                            color: "#f59e0b",
+                          }}
+                        >
+                          <i className="pi pi-users" />
+                        </div>
+                      </div>
+                      <div className="stats-card__value">{students.length}</div>
+                      <div className="stats-card__label">Alunos na turma</div>
+                    </div>
+
+                    <div
+                      className="stats-card"
+                      style={{ flex: 1, cursor: "default" }}
+                    >
+                      <div className="stats-card__top">
+                        <div
+                          className="stats-card__icon"
+                          style={{
+                            background: "rgba(16,185,129,0.15)",
+                            color: "#10b981",
+                          }}
+                        >
+                          <i className="pi pi-chart-bar" />
+                        </div>
+                      </div>
+                      <div
+                        className="stats-card__value"
+                        style={{
+                          color: (() => {
+                            const comNota = students.filter(
+                              (s) => s.grade !== null,
+                            );
+                            if (!comNota.length) return "var(--muted)";
+                            const avg =
+                              comNota.reduce((a, b) => a + b.grade, 0) /
+                              comNota.length;
+                            return avg >= 7
+                              ? "#10b981"
+                              : avg >= 5
+                                ? "#f59e0b"
+                                : "#ef4444";
+                          })(),
+                        }}
+                      >
+                        {(() => {
+                          const comNota = students.filter(
+                            (s) => s.grade !== null,
+                          );
+                          if (!comNota.length) return "—";
+                          return (
+                            comNota.reduce((a, b) => a + b.grade, 0) /
+                            comNota.length
+                          ).toFixed(1);
+                        })()}
+                      </div>
+                      <div className="stats-card__label">Média da turma</div>
+                    </div>
+
+                    <div
+                      className="stats-card"
+                      style={{ flex: 1, cursor: "default" }}
+                    >
+                      <div className="stats-card__top">
+                        <div
+                          className="stats-card__icon"
+                          style={{
+                            background: "rgba(59,130,246,0.15)",
+                            color: "#3b82f6",
+                          }}
+                        >
+                          <i className="pi pi-check-circle" />
+                        </div>
+                      </div>
+                      <div className="stats-card__value">
+                        {students.filter((s) => s.grade >= 7).length}
+                      </div>
+                      <div className="stats-card__label">Aprovados</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tabela */}
+                <DataTable
+                  key={selectedClass?.id}
+                  value={students}
+                  responsiveLayout="scroll"
+                  emptyMessage="Nenhum aluno."
+                >
+                  <Column field="name" header="Aluno" sortable />
+                  <Column field="email" header="E-mail" />
+                  <Column
+                    header="Nota lançada"
+                    body={(row) => row.grade ?? "—"}
+                    style={{ width: 160, paddingLeft: 16 }}
+                  />
+                  <Column
+                    header="Nova nota"
+                    style={{ width: 200 }}
+                    body={(row) => (
+                      <input
+                        type="number"
+                        className="form-input"
+                        style={{ width: 100 }}
+                        min={0}
+                        max={10}
+                        step={0.1}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          updateGrade(row.id, isNaN(val) ? null : val);
+                        }}
+                      />
+                    )}
+                  />
+                  <Column header="" body={actionBody} style={{ width: 120 }} />
+                </DataTable>
+              </>
             )}
           </div>
         </div>

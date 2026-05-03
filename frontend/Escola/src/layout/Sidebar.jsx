@@ -5,6 +5,12 @@ import "./Sidebar.css";
 
 const NAV_ITEMS = [
   {
+    path: "/profile",
+    label: "Meu Perfil",
+    icon: "pi-user",
+    roles: ["admin", "professor", "aluno"],
+  },
+  {
     path: "/",
     label: "Dashboard",
     icon: "pi-home",

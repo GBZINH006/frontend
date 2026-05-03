@@ -34,10 +34,25 @@ export default function Classes() {
         })
         .finally(() => setLoading(false));
     } else {
-      Promise.all([api.get(url), api.get("/classes/professores")])
-        .then(([c, p]) => {
-          const data = c.data?.turmas || c.data;
-          setClasses(Array.isArray(data) ? data : []);
+      Promise.all([
+        api.get(url),
+        api.get("/classes/professores"),
+        api.get("/enrollments"),
+      ])
+        .then(([c, p, e]) => {
+          const turmas = Array.isArray(c.data?.turmas) ? c.data.turmas : c.data;
+          const matriculas = e.data?.matriculas || e.data || [];
+
+          const turmasComContador = (Array.isArray(turmas) ? turmas : []).map(
+            (turma) => ({
+              ...turma,
+              totalAlunos: (Array.isArray(matriculas) ? matriculas : []).filter(
+                (m) => m.class_id === turma.id,
+              ).length,
+            }),
+          );
+
+          setClasses(turmasComContador);
           setProfessors(
             p.data.map((prof) => ({
               label: prof.user.name,
@@ -217,6 +232,30 @@ export default function Classes() {
               r.description || <span style={{ color: "var(--muted2)" }}>—</span>
             }
           />
+          {user?.role === "admin" && (
+            <Column
+              header="Alunos"
+              body={(r) => (
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 28,
+                    height: 28,
+                    borderRadius: "50%",
+                    background: "rgba(59,130,246,0.15)",
+                    color: "#3b82f6",
+                    fontWeight: 700,
+                    fontSize: 13,
+                  }}
+                >
+                  {r.totalAlunos ?? 0}
+                </span>
+              )}
+              style={{ width: 90 }}
+            />
+          )}
           {user?.role === "admin" && (
             <Column
               header="Professor"

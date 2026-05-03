@@ -20,7 +20,7 @@ import Grades from "./pages/Grades";
 
 import MyEnrollments from "./pages/Myenrollments";
 import MyGrades from "./pages/Mygrades";
-
+import Profile from "./pages/Profile";
 import AppLayout from "./layout/AppLayout";
 
 /* 🔐 Proteção de rota */
@@ -71,6 +71,9 @@ export default function App() {
               >
                 {/* Dashboard por role */}
                 <Route index element={<RoleDashboard />} />
+
+                {/* TODOS OS ROLES */}
+                <Route path="profile" element={<Profile />} />
 
                 {/* ADMIN */}
                 <Route path="students" element={<Students />} />
