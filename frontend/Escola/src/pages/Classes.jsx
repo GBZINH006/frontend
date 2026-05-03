@@ -24,18 +24,29 @@ export default function Classes() {
   const load = () => {
     setLoading(true);
     const url = user?.role === "professor" ? "/classes/minhas" : "/classes";
-    Promise.all([api.get(url), api.get("/classes/professores")])
-      .then(([c, p]) => {
-        const data = c.data?.turmas || c.data;
-        setClasses(Array.isArray(data) ? data : []);
-        setProfessors(
-          p.data.map((p) => ({
-            label: p.user.name,
-            value: p.professor_id,
-          })),
-        );
-      })
-      .finally(() => setLoading(false));
+
+    if (user?.role === "professor") {
+      api
+        .get(url)
+        .then((r) => {
+          const data = Array.isArray(r.data) ? r.data : r.data?.turmas || [];
+          setClasses(data);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      Promise.all([api.get(url), api.get("/classes/professores")])
+        .then(([c, p]) => {
+          const data = c.data?.turmas || c.data;
+          setClasses(Array.isArray(data) ? data : []);
+          setProfessors(
+            p.data.map((prof) => ({
+              label: prof.user.name,
+              value: prof.professor_id,
+            })),
+          );
+        })
+        .finally(() => setLoading(false));
+    }
   };
 
   useEffect(load, []);
@@ -130,24 +141,25 @@ export default function Classes() {
     </div>
   );
 
-  const actions = (row) => (
-    <div style={{ display: "flex", gap: 6 }}>
-      <button
-        className="btn btn-ghost"
-        style={{ padding: "6px 12px" }}
-        onClick={() => openEdit(row)}
-      >
-        <i className="pi pi-pencil" />
-      </button>
-      <button
-        className="btn btn-danger"
-        style={{ padding: "6px 12px" }}
-        onClick={() => remove(row)}
-      >
-        <i className="pi pi-trash" />
-      </button>
-    </div>
-  );
+  const actions = (row) =>
+    user?.role === "admin" ? (
+      <div style={{ display: "flex", gap: 6 }}>
+        <button
+          className="btn btn-ghost"
+          style={{ padding: "6px 12px" }}
+          onClick={() => openEdit(row)}
+        >
+          <i className="pi pi-pencil" />
+        </button>
+        <button
+          className="btn btn-danger"
+          style={{ padding: "6px 12px" }}
+          onClick={() => remove(row)}
+        >
+          <i className="pi pi-trash" />
+        </button>
+      </div>
+    ) : null;
 
   return (
     <div className="animate-in">
@@ -205,13 +217,17 @@ export default function Classes() {
               r.description || <span style={{ color: "var(--muted2)" }}>—</span>
             }
           />
-          <Column
-            header="Professor"
-            body={professorBody}
-            sortable
-            sortField="professor.name"
-          />
-          <Column header="Ações" body={actions} style={{ width: 120 }} />
+          {user?.role === "admin" && (
+            <Column
+              header="Professor"
+              body={professorBody}
+              sortable
+              sortField="professor.name"
+            />
+          )}
+          {user?.role === "admin" && (
+            <Column header="Ações" body={actions} style={{ width: 120 }} />
+          )}
         </DataTable>
       </div>
 
