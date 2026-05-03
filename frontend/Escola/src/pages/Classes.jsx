@@ -23,7 +23,10 @@ export default function Classes() {
 
   const load = () => {
     setLoading(true);
-    const url = user?.role === "professor" ? "/classes/minhas" : "/classes";
+    const url =
+      user?.role === "professor"
+        ? "/classes/minhas?limit=1000"
+        : "/classes?limit=1000";
 
     if (user?.role === "professor") {
       api
@@ -36,8 +39,8 @@ export default function Classes() {
     } else {
       Promise.all([
         api.get(url),
-        api.get("/classes/professores"),
-        api.get("/enrollments"),
+        api.get("/classes/professores?limit=1000"),
+        api.get("/enrollments?limit=1000"),
       ])
         .then(([c, p, e]) => {
           const turmas = Array.isArray(c.data?.turmas) ? c.data.turmas : c.data;

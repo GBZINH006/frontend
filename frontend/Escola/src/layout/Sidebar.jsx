@@ -58,6 +58,12 @@ const NAV_ITEMS = [
     icon: "pi-star",
     roles: ["aluno"],
   },
+  {
+    path: "/attendance",
+    label: "Frequência",
+    icon: "pi-check-square",
+    roles: ["admin", "professor"],
+  },
 ];
 
 const ROLE_LABELS = {

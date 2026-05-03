@@ -1,0 +1,84 @@
+/* ── Grid principal ── */
+.attendance-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.attendance-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Botões de status ── */
+.attendance-status-btn {
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all .15s;
+}
+
+.attendance-status-btn--presente {
+  background: #10b981;
+  color: #fff;
+}
+
+.attendance-status-btn--falta {
+  background: #ef4444;
+  color: #fff;
+}
+
+.attendance-status-btn--justificada {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.attendance-status-btn--inactive {
+  background: rgba(255,255,255,0.08);
+  color: var(--muted);
+}
+
+/* ── Badge de status no histórico ── */
+.attendance-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.attendance-badge--presente {
+  background: rgba(16,185,129,0.15);
+  color: #10b981;
+}
+
+.attendance-badge--falta {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+}
+
+.attendance-badge--justificada {
+  background: rgba(245,158,11,0.15);
+  color: #f59e0b;
+}
+
+/* ── Vazio ── */
+.attendance-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--muted);
+}
+
+.attendance-empty i {
+  font-size: 24px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.attendance-empty p {
+  font-size: 13px;
+}

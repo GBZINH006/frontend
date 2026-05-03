@@ -25,7 +25,11 @@ export default function Enrollments() {
     setLoading(true);
     const enrollUrl =
       user?.role === "professor" ? "/enrollments/minhas" : "/enrollments";
-    Promise.all([api.get(enrollUrl), api.get("/students"), api.get("/classes")])
+    Promise.all([
+      api.get(`${enrollUrl}?limit=1000`),
+      api.get("/students?limit=1000"),
+      api.get("/classes?limit=1000"),
+    ])
       .then(([e, s, c]) => {
         const data = e.data?.matriculas || e.data;
         console.log("enrollments:", data);

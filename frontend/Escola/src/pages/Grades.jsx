@@ -86,7 +86,7 @@ export default function Grades() {
   const load = () => {
     setLoading(true);
     api
-      .get("/grades")
+      .get("/grades?limit=1000")
       .then((r) => setGrades(r.data?.notas || []))
       .finally(() => setLoading(false));
   };

@@ -11,7 +11,7 @@ import Login from "./pages/login";
 import Dashboard from "./pages/Dashboard";
 import Professordashboard from "./pages/ProfessorDashboard";
 import Studentdashboard from "./pages/Studentdashboard";
-
+import Attendance from "./pages/Attendance";
 import Students from "./pages/Students";
 import Teachers from "./pages/Teachers";
 import Classes from "./pages/Classes";
@@ -74,6 +74,7 @@ export default function App() {
 
                 {/* TODOS OS ROLES */}
                 <Route path="profile" element={<Profile />} />
+                <Route path="attendance" element={<Attendance />} />
 
                 {/* ADMIN */}
                 <Route path="students" element={<Students />} />

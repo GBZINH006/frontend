@@ -20,7 +20,7 @@ export default function Teachers() {
   const load = () => {
     setLoading(true);
     api
-      .get("/classes/professores")
+      .get("/classes/professores?limit=1000")
       .then((r) => setTeachers(Array.isArray(r.data) ? r.data : []))
       .catch(() => setTeachers([]))
       .finally(() => setLoading(false));

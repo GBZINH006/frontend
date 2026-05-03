@@ -37,7 +37,7 @@ export default function Students() {
         .finally(() => setLoading(false));
     } else {
       api
-        .get("/students")
+        .get("/students?limit=1000")
         .then((r) => setStudents(r.data?.alunos || r.data))
         .finally(() => setLoading(false));
     }
