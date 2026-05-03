@@ -6,6 +6,7 @@ import api from "../services/api";
 import { useToast } from "../components/ToastProvider";
 import { useAuth } from "../context/AuthContext";
 import { Dialog } from "primereact/dialog";
+import { Dropdown } from "primereact/dropdown";
 
 export default function Grades() {
   const { show } = useToast();
@@ -15,6 +16,7 @@ export default function Grades() {
   const [search, setSearch] = useState("");
   const [dialog, setDialog] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [turmaFiltro, setTurmaFiltro] = useState(null);
   const [form, setForm] = useState({ value: "" });
 
   const openEdit = (row) => {
@@ -92,11 +94,18 @@ export default function Grades() {
     });
   };
 
-  const filtered = grades.filter(
-    (g) =>
+  const filtered = grades.filter((g) => {
+    const matchSearch =
       g.aluno?.toLowerCase().includes(search.toLowerCase()) ||
-      g.turma?.toLowerCase().includes(search.toLowerCase()),
-  );
+      g.turma?.toLowerCase().includes(search.toLowerCase());
+    const matchTurma = turmaFiltro ? g.turma === turmaFiltro : true;
+    return matchSearch && matchTurma;
+  });
+
+  const turmasUnicas = [...new Set(grades.map((g) => g.turma))].map((t) => ({
+    label: t,
+    value: t,
+  }));
 
   const notaBody = (row) => {
     const n = row.value ?? row.nota;
@@ -155,25 +164,35 @@ export default function Grades() {
       <div className="card">
         <div className="card-header">
           <h2>Lista de Notas</h2>
-          <div style={{ position: "relative" }}>
-            <i
-              className="pi pi-search"
-              style={{
-                position: "absolute",
-                left: 10,
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "var(--muted2)",
-                fontSize: 13,
-              }}
+          <div style={{ display: "flex", gap: 10 }}>
+            <Dropdown
+              value={turmaFiltro}
+              options={turmasUnicas}
+              onChange={(e) => setTurmaFiltro(e.value)}
+              placeholder="Filtrar por turma"
+              showClear
+              style={{ width: 200 }}
             />
-            <input
-              className="form-input"
-              style={{ paddingLeft: 32, width: 240 }}
-              placeholder="Buscar aluno ou turma..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <div style={{ position: "relative" }}>
+              <i
+                className="pi pi-search"
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "var(--muted2)",
+                  fontSize: 13,
+                }}
+              />
+              <input
+                className="form-input"
+                style={{ paddingLeft: 32, width: 240 }}
+                placeholder="Buscar aluno ou turma..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
         </div>
         <Dialog
