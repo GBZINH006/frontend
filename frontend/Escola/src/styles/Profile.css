@@ -1,0 +1,61 @@
+/* ── Grid do perfil ── */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── Avatar card ── */
+.profile-avatar-card {
+  text-align: center;
+  padding: 32px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #0b1120;
+  margin: 0 auto 16px;
+}
+
+.profile-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.profile-email {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.profile-role-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(245,158,11,0.15);
+  color: #f59e0b;
+}
+
+/* ── Formulário ── */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
