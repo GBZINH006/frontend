@@ -6,7 +6,6 @@ import api from "../services/api";
 import { useToast } from "../components/ToastProvider";
 import { useAuth } from "../context/AuthContext";
 import { Dialog } from "primereact/dialog";
-import { Dropdown } from "primereact/dropdown";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -20,6 +19,16 @@ export default function Grades() {
   const [editing, setEditing] = useState(null);
   const [turmaFiltro, setTurmaFiltro] = useState(null);
   const [form, setForm] = useState({ value: "" });
+  const [historyDialog, setHistoryDialog] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyGrade, setHistoryGrade] = useState(null);
+
+  const openHistory = async (row) => {
+    setHistoryGrade(row);
+    const { data } = await api.get(`/grades/${row.id}/history`);
+    setHistory(Array.isArray(data) ? data : []);
+    setHistoryDialog(true);
+  };
 
   const openEdit = (row) => {
     setForm({ value: row.nota });
@@ -56,6 +65,13 @@ export default function Grades() {
         onClick={() => openEdit(row)}
       >
         <i className="pi pi-pencil" />
+      </button>
+      <button
+        className="btn btn-ghost"
+        style={{ padding: "6px 12px" }}
+        onClick={() => openHistory(row)}
+      >
+        <i className="pi pi-history" />
       </button>
       <button
         className="btn btn-danger"
@@ -194,14 +210,19 @@ export default function Grades() {
         <div className="card-header">
           <h2>Lista de Notas</h2>
           <div style={{ display: "flex", gap: 10 }}>
-            <Dropdown
-              value={turmaFiltro}
-              options={turmasUnicas}
-              onChange={(e) => setTurmaFiltro(e.value)}
-              placeholder="Filtrar por turma"
-              showClear
+            <select
+              className="form-input"
               style={{ width: 200 }}
-            />
+              value={turmaFiltro ?? ""}
+              onChange={(e) => setTurmaFiltro(e.target.value || null)}
+            >
+              <option value="">Todas as turmas</option>
+              {turmasUnicas.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
             <div style={{ position: "relative" }}>
               <i
                 className="pi pi-search"
@@ -264,6 +285,55 @@ export default function Grades() {
               </button>
             </div>
           </div>
+        </Dialog>
+        <Dialog
+          header={`Histórico — ${historyGrade?.aluno} em ${historyGrade?.turma}`}
+          visible={historyDialog}
+          onHide={() => setHistoryDialog(false)}
+          style={{ width: 480 }}
+        >
+          {history.length === 0 ? (
+            <p
+              style={{
+                color: "var(--muted)",
+                textAlign: "center",
+                padding: "24px 0",
+              }}
+            >
+              Nenhuma alteração registrada.
+            </p>
+          ) : (
+            <DataTable value={history} emptyMessage="Sem histórico.">
+              <Column
+                header="Nota anterior"
+                body={(r) => (
+                  <span style={{ color: "#f87171", fontWeight: 700 }}>
+                    {r.old_value}
+                  </span>
+                )}
+              />
+              <Column
+                header="Nova nota"
+                body={(r) => (
+                  <span style={{ color: "#4ade80", fontWeight: 700 }}>
+                    {r.new_value}
+                  </span>
+                )}
+              />
+              <Column
+                header="Data"
+                body={(r) =>
+                  new Date(r.createdAt).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                }
+              />
+            </DataTable>
+          )}
         </Dialog>
         <DataTable
           value={filtered}

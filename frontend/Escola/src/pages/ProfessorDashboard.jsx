@@ -55,7 +55,11 @@ export default function ProfessorDashboard() {
 
         const alunosComNota = alunosDaTurma.filter(Boolean).map((aluno) => {
           const nota = notasDaTurma.find((n) => n.aluno === aluno.name);
-          return { ...aluno, grade: nota?.nota ?? null };
+          return {
+            ...aluno,
+            grade: nota?.nota ?? null,
+            gradeId: nota?.id ?? null, // salva o id da nota
+          };
         });
 
         setStudents(alunosComNota);
@@ -95,22 +99,27 @@ export default function ProfessorDashboard() {
     }
 
     try {
-      await api.post("/grades", {
-        student_id: studentId,
-        class_id: selectedClass.id,
-        value,
-      });
-      console.log("Resposta:", await api.get("/grades"));
-      // atualiza localmente
-      setStudents((prev) =>
-        prev.map((s) => (s.id === studentId ? { ...s, grade: value } : s)),
-      );
+      const student = students.find((s) => s.id === studentId);
+
+      if (student?.gradeId) {
+        // aluno já tem nota — atualiza
+        await api.put(`/grades/${student.gradeId}`, { value });
+      } else {
+        // aluno não tem nota — cria
+        await api.post("/grades", {
+          student_id: studentId,
+          class_id: selectedClass.id,
+          value,
+        });
+      }
+
       show({
         severity: "success",
         summary: "Salvo",
         detail: "Nota lançada com sucesso!",
         life: 3000,
       });
+      loadStudents(selectedClass);
     } catch (e) {
       show({
         severity: "error",
