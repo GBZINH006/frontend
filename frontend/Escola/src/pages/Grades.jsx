@@ -7,6 +7,8 @@ import { useToast } from "../components/ToastProvider";
 import { useAuth } from "../context/AuthContext";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function Grades() {
   const { show } = useToast();
@@ -151,6 +153,30 @@ export default function Grades() {
     );
   };
 
+  const exportPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Relatório de Notas", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Gerado em ${new Date().toLocaleDateString("pt-BR")}`, 14, 22);
+
+    autoTable(doc, {
+      startY: 28,
+      head: [["Aluno", "Turma", "Nota", "Situação"]],
+      body: filtered.map((g) => [
+        g.aluno,
+        g.turma,
+        g.nota,
+        g.nota >= 7 ? "Aprovado" : g.nota >= 5 ? "Recuperação" : "Reprovado",
+      ]),
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [245, 158, 11] },
+    });
+
+    doc.save("notas.pdf");
+  };
+
   return (
     <div className="animate-in">
       <ConfirmDialog />
@@ -159,6 +185,9 @@ export default function Grades() {
           <h1>Notas</h1>
           <p>{grades.length} notas lançadas</p>
         </div>
+        <button className="btn btn-primary" onClick={exportPDF}>
+          <i className="pi pi-file-pdf" /> Exportar PDF
+        </button>
       </div>
 
       <div className="card">
