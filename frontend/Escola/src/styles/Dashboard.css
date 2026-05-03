@@ -1,0 +1,72 @@
+/* ── Grid de cards ── */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* ── Resumo geral ── */
+.dashboard-resumo {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dashboard-resumo__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-resumo__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.dashboard-resumo__info {
+  flex: 1;
+}
+
+.dashboard-resumo__top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.dashboard-resumo__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dashboard-resumo__value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.dashboard-resumo__bar {
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dashboard-resumo__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .6s ease;
+}
+
+/* ── Loading do gráfico ── */
+.dashboard-chart-loading {
+  height: 240px;
+  display: grid;
+  place-items: center;
+  color: var(--muted2);
+}
