@@ -213,21 +213,28 @@ export default function ProfessorDashboard() {
                 <Column field="name" header="Aluno" sortable />
                 <Column field="email" header="E-mail" />
                 <Column
-                  header="Nota"
-                  style={{ width: 140 }}
+                  header="Nota lançada"
+                  body={(row) => row.grade ?? "—"}
+                  style={{ width: 160, paddingLeft: 16 }}
+                />
+                <Column
+                  header="Nova nota"
+                  style={{ width: 200 }}
                   body={(row) => (
-                    <InputNumber
-                      value={grades[row.id] ?? row.grade ?? null}
-                      onValueChange={(e) => updateGrade(row.id, e.value)}
+                    <input
+                      type="number"
+                      className="form-input"
+                      style={{ width: 100 }}
                       min={0}
                       max={10}
-                      mode="decimal"
-                      minFractionDigits={1}
-                      maxFractionDigits={1}
+                      step={0.1}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        updateGrade(row.id, isNaN(val) ? null : val);
+                      }}
                     />
                   )}
                 />
-                <Column header="Nota atual" body={(row) => row.grade ?? "-"} />
                 <Column header="" body={actionBody} style={{ width: 120 }} />
               </DataTable>
             )}
