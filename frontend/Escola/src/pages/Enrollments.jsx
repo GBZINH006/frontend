@@ -28,6 +28,7 @@ export default function Enrollments() {
     Promise.all([api.get(enrollUrl), api.get("/students"), api.get("/classes")])
       .then(([e, s, c]) => {
         const data = e.data?.matriculas || e.data;
+        console.log("enrollments:", data);
         setEnrollments(Array.isArray(data) ? data : []);
         setStudents(
           (s.data?.alunos || s.data).map((s) => ({

@@ -7,7 +7,7 @@ import api from "../services/api";
 import { useToast } from "../components/ToastProvider";
 import { useAuth } from "../context/AuthContext";
 
-const empty = { name: "", email: "" };
+const empty = { name: "", email: "", password: "" };
 
 export default function Students() {
   const [students, setStudents] = useState([]);
@@ -64,6 +64,14 @@ export default function Students() {
           severity: "success",
           summary: "Atualizado",
           detail: "Aluno atualizado.",
+          life: 3000,
+        });
+      } else {
+        await api.post("/auth/register", { ...form, role: "aluno" });
+        show({
+          severity: "success",
+          summary: "Criado",
+          detail: "Aluno cadastrado.",
           life: 3000,
         });
       }
@@ -136,6 +144,11 @@ export default function Students() {
           <h1>Alunos</h1>
           <p>{students.length} alunos cadastrados</p>
         </div>
+        {user?.role === "admin" && (
+          <button className="btn btn-primary" onClick={openNew}>
+            <i className="pi pi-plus" /> Novo Aluno
+          </button>
+        )}
       </div>
 
       <div className="card">
@@ -212,6 +225,18 @@ export default function Students() {
               placeholder="email@exemplo.com"
             />
           </div>
+          {!editing && (
+            <div className="form-group">
+              <label className="form-label">Senha</label>
+              <input
+                className="form-input"
+                type="password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="Mínimo 8 caracteres, 1 maiúscula e 1 número"
+              />
+            </div>
+          )}
           <div
             style={{
               display: "flex",
