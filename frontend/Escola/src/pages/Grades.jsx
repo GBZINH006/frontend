@@ -4,12 +4,64 @@ import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import api from "../services/api";
 import { useToast } from "../components/ToastProvider";
+import { useAuth } from "../context/AuthContext";
+import { Dialog } from "primereact/dialog";
 
 export default function Grades() {
+  const { show } = useToast();
+  const { user } = useAuth();
   const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const { show } = useToast();
+  const [dialog, setDialog] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ value: "" });
+
+  const openEdit = (row) => {
+    setForm({ value: row.nota });
+    setEditing(row.id);
+    setDialog(true);
+  };
+
+  const save = async () => {
+    try {
+      await api.put(`/grades/${editing}`, { value: form.value });
+      show({
+        severity: "success",
+        summary: "Atualizado",
+        detail: "Nota atualizada.",
+        life: 3000,
+      });
+      setDialog(false);
+      load();
+    } catch (e) {
+      show({
+        severity: "error",
+        summary: "Erro",
+        detail: e.response?.data?.message || "Erro ao salvar.",
+        life: 4000,
+      });
+    }
+  };
+
+  const actions = (row) => (
+    <div style={{ display: "flex", gap: 6 }}>
+      <button
+        className="btn btn-ghost"
+        style={{ padding: "6px 12px" }}
+        onClick={() => openEdit(row)}
+      >
+        <i className="pi pi-pencil" />
+      </button>
+      <button
+        className="btn btn-danger"
+        style={{ padding: "6px 12px" }}
+        onClick={() => remove(row)}
+      >
+        <i className="pi pi-trash" />
+      </button>
+    </div>
+  );
 
   const load = () => {
     setLoading(true);
@@ -90,16 +142,6 @@ export default function Grades() {
     );
   };
 
-  const actions = (row) => (
-    <button
-      className="btn btn-danger"
-      style={{ padding: "6px 12px" }}
-      onClick={() => remove(row)}
-    >
-      <i className="pi pi-trash" />
-    </button>
-  );
-
   return (
     <div className="animate-in">
       <ConfirmDialog />
@@ -134,6 +176,47 @@ export default function Grades() {
             />
           </div>
         </div>
+        <Dialog
+          header="Editar Nota"
+          visible={dialog}
+          onHide={() => setDialog(false)}
+          style={{ width: 360 }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              paddingTop: 8,
+            }}
+          >
+            <div className="form-group">
+              <label className="form-label">Nota</label>
+              <input
+                className="form-input"
+                type="number"
+                min={0}
+                max={10}
+                step={0.1}
+                value={form.value}
+                onChange={(e) => setForm({ value: parseFloat(e.target.value) })}
+              />
+            </div>
+            <div
+              style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}
+            >
+              <button
+                className="btn btn-ghost"
+                onClick={() => setDialog(false)}
+              >
+                Cancelar
+              </button>
+              <button className="btn btn-primary" onClick={save}>
+                Salvar
+              </button>
+            </div>
+          </div>
+        </Dialog>
         <DataTable
           value={filtered}
           loading={loading}

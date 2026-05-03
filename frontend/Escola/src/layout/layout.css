@@ -1,9 +1,10 @@
 /* ── Layout ── */
 .app-layout {
-  display: flex;
+  display: flex !important;
+  flex-direction: row;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
-  background: var(--bg);
 }
 
 .app-main {
@@ -12,7 +13,6 @@
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
-  background: var(--bg);
 }
 
 .app-content {

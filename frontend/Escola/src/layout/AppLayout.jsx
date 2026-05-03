@@ -4,14 +4,11 @@ import Topbar from "./Topbar";
 
 export default function AppLayout() {
   return (
-    <div className="app-layout">
+    <div style={{ display: "flex", flexDirection: "row", height: "100vh", width: "100vw", overflow: "hidden" }}>
       <Sidebar />
-
-      <div className="app-main">
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
         <Topbar />
-
-        {/* 🔽 AQUI fica o scroll */}
-        <main className="app-content">
+        <main style={{ flex: 1, overflowY: "auto", padding: "32px", background: "var(--bg)" }}>
           <Outlet />
         </main>
       </div>
