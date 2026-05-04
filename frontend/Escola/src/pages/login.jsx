@@ -1,14 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../components/ToastProvider";
 import api from "../services/api";
 import "../styles/login.css";
 
+// partículas geradas uma vez
+const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
+  id: i,
+  size:  Math.random() * 4 + 2,
+  left:  Math.random() * 100,
+  bottom: Math.random() * 40,
+  duration: Math.random() * 8 + 6,
+  delay:    Math.random() * 6,
+  drift:    (Math.random() - 0.5) * 60,
+  color: i % 3 === 0
+    ? "rgba(245,158,11,0.7)"
+    : i % 3 === 1
+    ? "rgba(99,179,237,0.6)"
+    : "rgba(255,255,255,0.4)",
+}));
+
 const CIRCLES = [
-  { w: 500, h: 500, top: -160, left: -160, opacity: 0.07 },
-  { w: 350, h: 350, top: -60,  left: -60,  opacity: 0.05 },
-  { w: 400, h: 400, bottom: -120, right: -120, opacity: 0.06 },
+  { w: 500, h: 500, top: -160, left: -160 },
+  { w: 350, h: 350, top: -60,  left: -60  },
+  { w: 400, h: 400, bottom: -120, right: -120 },
 ];
 
 const FEATURES = [
@@ -21,6 +37,9 @@ const FEATURES = [
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [mouse, setMouse] = useState({ x: 50, y: 50 });
+  const leftRef = useRef(null);
+
   const { login, isAuthenticated } = useAuth();
   const { show } = useToast();
   const navigate = useNavigate();
@@ -30,6 +49,15 @@ export default function Login() {
   }, [isAuthenticated]);
 
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleMouseMove = (e) => {
+    const rect = leftRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setMouse({
+      x: ((e.clientX - rect.left) / rect.width)  * 100,
+      y: ((e.clientY - rect.top)  / rect.height) * 100,
+    });
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -56,20 +84,48 @@ export default function Login() {
     <div className="login-page">
 
       {/* ── Lado esquerdo ── */}
-      <div className="login-left">
+      <div className="login-left" ref={leftRef} onMouseMove={handleMouseMove}>
+
+        {/* 1. luz que segue o mouse */}
+        <div className="login-mouse-glow" style={{ left: `${mouse.x}%`, top: `${mouse.y}%` }} />
+
+        {/* 2. partículas flutuantes */}
+        {PARTICLES.map((p) => (
+          <div
+            key={p.id}
+            className="login-particle"
+            style={{
+              width: p.size, height: p.size,
+              left: `${p.left}%`,
+              bottom: `${p.bottom}%`,
+              background: p.color,
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
+              "--drift": `${p.drift}px`,
+              boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+            }}
+          />
+        ))}
+
         {CIRCLES.map((s, i) => (
           <div key={i} className="login-circle" style={{
             width: s.w, height: s.h,
             top: s.top, left: s.left,
             bottom: s.bottom, right: s.right,
-            opacity: s.opacity,
           }} />
         ))}
+
         <div className="login-glow-amber" />
         <div className="login-glow-blue" />
 
+        {/* 3 + 4. conteúdo com cascata de entrada e ícone com ping */}
         <div className="login-left-content">
-          <div className="login-icon">🎓</div>
+
+          <div className="login-icon-wrapper">
+            <div className="login-icon-ping" />
+            <div className="login-icon-ping2" />
+            <div className="login-icon">🎓</div>
+          </div>
 
           <h1 className="login-title">
             <span className="login-title-gradient">Portal</span>{" "}
@@ -93,7 +149,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* ── Lado direito ── */}
+      {/* ── Lado direito com borda brilhante (5) ── */}
       <div className="login-right">
         <div className="login-form-wrapper">
 
@@ -111,11 +167,12 @@ export default function Login() {
               <label className="login-label">E-MAIL</label>
               <div className="login-input-wrapper">
                 <i className="pi pi-envelope login-input-icon" />
+                {/* 6. input com borda que acende */}
                 <input
                   className="login-input"
                   type="email"
                   name="email"
-                  placeholder="admin@admin.com"
+                  placeholder="seu@email.com"
                   value={form.email}
                   onChange={handle}
                   required
@@ -141,6 +198,7 @@ export default function Login() {
               </div>
             </div>
 
+            {/* shimmer no botão (6) */}
             <button className="login-btn" type="submit" disabled={loading}>
               {loading && <i className="pi pi-spin pi-spinner" />}
               {loading ? "Entrando..." : "Entrar"}
