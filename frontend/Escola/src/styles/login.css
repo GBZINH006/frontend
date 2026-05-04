@@ -336,3 +336,17 @@
   box-shadow: none;
 }
 .login-btn:disabled::after { display: none; }
+
+/* ── 5. ESTRELAS no login ── */
+.login-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
+  z-index: 0;
+  animation: starPulse ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50%       { opacity: 0.9;  transform: scale(1.4); }
+}

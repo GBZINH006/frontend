@@ -5,6 +5,16 @@ import { useToast } from "../components/ToastProvider";
 import api from "../services/api";
 import "../styles/login.css";
 
+// estrelas fixas
+const STARS = Array.from({ length: 60 }, (_, i) => ({
+  id: i,
+  size: Math.random() * 2.5 + 1,
+  left: Math.random() * 100,
+  top: Math.random() * 100,
+  duration: Math.random() * 3 + 2,
+  delay: Math.random() * 4,
+}));
+
 // partículas geradas uma vez
 const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   id: i,
@@ -88,6 +98,20 @@ export default function Login() {
 
         {/* 1. luz que segue o mouse */}
         <div className="login-mouse-glow" style={{ left: `${mouse.x}%`, top: `${mouse.y}%` }} />
+
+        {/* 0. estrelas */}
+        {STARS.map((s) => (
+          <div
+            key={s.id}
+            className="login-star"
+            style={{
+              width: s.size, height: s.size,
+              left: `${s.left}%`, top: `${s.top}%`,
+              animationDuration: `${s.duration}s`,
+              animationDelay: `${s.delay}s`,
+            }}
+          />
+        ))}
 
         {/* 2. partículas flutuantes */}
         {PARTICLES.map((p) => (
