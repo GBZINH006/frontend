@@ -1,16 +1,27 @@
 import { Toast } from "primereact/toast";
-import { createContext, useContext, useRef } from "react";
+import { createContext, useContext, useCallback, useRef } from "react";
 
-const ToastContext = createContext();
+const fallbackToast = {
+  show: (msg) => {
+    console.warn("ToastProvider não está disponível:", msg);
+  },
+};
 
-export const useToast = () => useContext(ToastContext);
+const ToastContext = createContext(fallbackToast);
+
+export const useToast = () => useContext(ToastContext) || fallbackToast;
 
 export function ToastProvider({ children }) {
-  const toast = useRef();
+  const toast = useRef(null);
 
-  const show = (msg) => {
+  const show = useCallback((msg) => {
+    if (!toast.current) {
+      console.warn("Toast ainda não está pronto:", msg);
+      return;
+    }
+
     toast.current.show(msg);
-  };
+  }, []);
 
   return (
     <ToastContext.Provider value={{ show }}>
